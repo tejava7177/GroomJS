@@ -1,0 +1,145 @@
+/* 게임 시작 화면 스타일 */
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    font-family: Arial, sans-serif;
+  }
+  
+  .title {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+  
+  .input-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+  }
+  
+  .input-label {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .input-field {
+    padding: 0.5rem;
+    font-size: 1.2rem;
+    text-align: center;
+  }
+  
+  .btn {
+    background-color: #0066cc;
+    color: #fff;
+    padding: 0.5rem 1rem;
+    font-size: 1.2rem;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .btn:hover {
+    background-color: #0052a3;
+  }
+  
+
+  .cards-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    margin-top: 30px;
+  }
+  
+  .cards {
+    display: flex;
+    /* flex-direction: row; */
+  }
+  
+  /* #player-cards{
+    width: 120px;
+    height: 160px;
+    margin-right: 10px;
+    border-radius: 10px;
+    background-color: white;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    line-height: 160px;
+    color: black;
+    flex-direction: row;
+  } */
+
+  .cards > div {
+    width: 120px;
+    height: 160px;
+    margin-right: 10px;
+    border-radius: 10px;
+    background-color: white;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    line-height: 160px;
+    color: black;
+  }
+  
+  .score {
+    width: 120px;
+    height: 160px;
+    border-radius: 10px;
+    background-color: white;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    line-height: 160px;
+    color: black;
+  }
+  
+  .hidden {
+    display: none;
+  }
+
+
+  #again-btn {
+    display: none;
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 18px;
+    border-radius: 5px;
+    background-color: #e6e6e6;
+    color: #333;
+    cursor: pointer;
+  }
+
+  #again-btn:hover {
+    background-color: #333;
+    color: #fff;
+  }
+
+  #player-money, #bet-Amount {
+    background-color: #f9f9f9;
+    color: #333;
+    font-weight: bold;
+    font-size: 24px;
+    padding: 10px;
+  }
+
+  
+  
+
+  #reset-btn {
+  display: none;
+  margin-top: 10px;
+  padding: 10px 20px;
+  background-color: #f44336;
+  color: white;
+  font-size: 18px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}

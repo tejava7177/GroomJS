@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Blackjack Game</title>
+    <link rel="stylesheet" type="text/css" href="style.css" />
+</head>
+<body>
+    <div class="container">
+    <h1 class="title">Black Jack Game</h1>
+    <div class="input-container">
+        <!-- <label class="input-label" for="player-name">Enter your name:</label>
+        <input class="input-field" type="text" id="player-name" /> -->
+    </div>
+
+    <button class="btn" id="start-btn" onclick="startGame()">Start Game</button>
+
+    <!-- <div id="dealer-score" class="score"></div> -->
+
+    <!-- 배팅 기능 -->
+    <div id="bet">
+        <div id="player-money">Your Money: 100</div>
+        <div id="bet-Amount"></div>
+    </div>
+
+    <p id="dealer-score"></p> 
+    <div id="dealer-cards" class="cards hidden" ></div>
+    <br>
+    <br>
+    <!-- <div id="player-score" class="score"></div> -->
+    <p id="player-score" class="hidden"></p>
+    <div id="player-cards" class="cards hidden"></div>
+
+
+    <div id="hit-stand" class="hidden">
+        <button class="btn" id="hit-btn" onclick="hitPlayer()">Hit</button>
+        <button class="btn" id="stand-btn" onclick="stand()">Stand</button>
+    </div>
+
+    <button id="again-btn"  onclick="startGame()">Again</button>
+    
+
+    <button id="reset-btn" onclick="location.href='file:///Users/simjuheun/Desktop/blackjack/index.html'">Reset</button>
+   
+
+
+    </div>
+
+    <script src="index.js"></script>
+</body>
+</html>
