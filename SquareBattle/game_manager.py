@@ -1,47 +1,75 @@
 import pygame
-from settings import *
+import random
+from settings import WIDTH, HEIGHT, FPS, WHITE, SPIKE_RESPAWN_TIME_RANGE
 from battle_square import BattleSquare
 from spike_item import SpikeItem
 
 def run_game():
+    # Pygame 초기화
     pygame.init()
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
+    pygame.display.set_caption("Battle Square Game")
     clock = pygame.time.Clock()
 
-    # 객체 생성
-    square1 = BattleSquare(200, 300, 100, RED, 5, 100)
-    square2 = BattleSquare(500, 300, 100, BLUE, 5, 100)
-    spike_item = SpikeItem()
+    # 사각형 객체 생성 (빨간색, 파란색)
+    red_square = BattleSquare(x=100, y=200, color=(255, 0, 0), controls="auto")
+    blue_square = BattleSquare(x=600, y=200, color=(0, 0, 255), controls="auto")
 
-    frame_count = 0  # 프레임 카운트
+    # 가시 아이템 (초기에는 None, 이후 랜덤 생성)
+    spike_item = None
+    spike_spawn_timer = random.randint(*SPIKE_RESPAWN_TIME_RANGE)
 
     running = True
     while running:
-        screen.fill(BLACK)
+        screen.fill(WHITE)
 
+        # 이벤트 처리
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
 
         # 사각형 이동
-        square1.move()
-        square2.move()
+        red_square.move()
+        blue_square.move()
 
-        # 3초 이내 가시 요소 첫 등장, 이후 계속 유지
-        if frame_count >= INITIAL_SPAWN_TIME and not spike_item.exists:
-            spike_item.spawn()
+        # 사각형끼리 충돌 감지 및 반응
+        red_square.handle_collision(blue_square)
+        blue_square.handle_collision(red_square)
 
-        # 충돌 감지
-        square1.check_spike_collision(spike_item)
-        square2.check_spike_collision(spike_item)
+        # 가시 아이템 생성 (랜덤 타이밍)
+        if spike_item is None and spike_spawn_timer <= 0:
+            spike_item = SpikeItem()
+        elif spike_item is None:
+            spike_spawn_timer -= 1  # 가시 아이템 생성 타이머 감소
 
-        # 사각형 및 가시 요소 그리기
-        square1.draw(screen)
-        square2.draw(screen)
-        spike_item.draw(screen)
+        # 가시 아이템이 존재하면 화면에 그림
+        if spike_item:
+            spike_item.draw(screen)
+
+            # 가시 아이템 충돌 체크
+            if red_square.check_spike_collision(spike_item):
+                red_square.add_spike()
+                spike_item = None  # 가시 아이템 제거
+                spike_spawn_timer = random.randint(*SPIKE_RESPAWN_TIME_RANGE)  # 다음 가시 아이템 생성 타이머 설정
+
+            elif blue_square.check_spike_collision(spike_item):
+                blue_square.add_spike()
+                spike_item = None  # 가시 아이템 제거
+                spike_spawn_timer = random.randint(*SPIKE_RESPAWN_TIME_RANGE)  # 다음 가시 아이템 생성 타이머 설정
+
+        # 사각형 그리기
+        red_square.draw(screen)
+        blue_square.draw(screen)
+
+        # 승패 체크
+        if red_square.hp <= 0:
+            print("Blue Wins!")
+            running = False
+        elif blue_square.hp <= 0:
+            print("Red Wins!")
+            running = False
 
         pygame.display.flip()
         clock.tick(FPS)
-        frame_count += 1  # 프레임 증가
 
     pygame.quit()

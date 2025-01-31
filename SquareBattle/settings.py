@@ -18,9 +18,9 @@ INITIAL_SPAWN_TIME = 180  # 3초 (60 FPS 기준)
 
 # 사각형 기본 설정
 INITIAL_HP = 100  # 사각형의 초기 HP (Power)
-SQUARE_SIZE = 50  # 사각형 기본 크기
+SQUARE_SIZE = 100  # 사각형 기본 크기
 SQUARE_SPEED = 3  # 사각형 이동 속도
 
 # 가시 요소 관련 설정
-SPIKE_ITEM_SIZE = 20  # 가시 아이템 크기
+SPIKE_ITEM_SIZE = 35  # 가시 아이템 크기
 SPIKE_RESPAWN_TIME_RANGE = (180, 600)  # 가시 아이템 생성 대기 시간 범위 (3초~10초)
