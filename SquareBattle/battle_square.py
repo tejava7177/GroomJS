@@ -91,8 +91,9 @@ class BattleSquare:
             # 가시 공격 판정
             if self.has_attacking_spike(other):
                 other.hp -= 10
-                other.width = max(10, other.width - 2)  # 최소 크기 유지
-                other.height = max(10, other.height - 2)
+                # other.width = max(10, other.width - 2)  # 최소 크기 유지
+                # other.height = max(10, other.height - 2)
+                other.update_size()
                 print(f"{self.color} 사각형이 공격! {other.color} HP: {other.hp}")
 
             # 충돌하면 랜덤한 방향으로 튕기기
@@ -110,3 +111,20 @@ class BattleSquare:
         if self.spikes["right"] and other.x <= self.x + self.width and other.x > self.x:
             return True
         return False
+
+    def update_size(self):
+        """ HP가 10 감소할 때마다 크기 10% 감소, 속도 2% 증가 """
+        scale_factor = 0.9  # 크기 10% 감소
+        speed_factor = 1.02  # 속도 2% 증가
+
+        self.width = max(10, int(self.width * scale_factor))  # 최소 크기 10 유지
+        self.height = max(10, int(self.height * scale_factor))
+        self.speed_x = int(self.speed_x * speed_factor) if self.speed_x != 0 else SQUARE_SPEED
+        self.speed_y = int(self.speed_y * speed_factor) if self.speed_y != 0 else SQUARE_SPEED
+
+        # 가시 크기도 사각형 크기에 맞게 줄이기
+        self.draw_spikes_update()
+
+    def draw_spikes_update(self):
+        """ 가시 크기를 사각형 크기에 맞게 조정 """
+        spike_size = self.width // 10  # 사각형 크기에 맞게 가시 크기 재조정
