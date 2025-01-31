@@ -1,6 +1,7 @@
 import pygame
 import random
 from draw_hpBar import draw_hp_bar  # HP 바 UI 불러오기
+from heal_item import HealItem  # HP 회복 아이템 추가
 from settings import WIDTH, HEIGHT, FPS, WHITE, SPIKE_RESPAWN_TIME_RANGE
 from battle_square import BattleSquare
 from spike_item import SpikeItem
@@ -19,6 +20,10 @@ def run_game():
     # 가시 아이템 (초기에는 None, 이후 랜덤 생성)
     spike_item = None
     spike_spawn_timer = random.randint(*SPIKE_RESPAWN_TIME_RANGE)
+
+    # Heal 아이템 (초기에는 None, 이후 랜덤 생성)
+    heal_item = None
+    heal_spawn_timer = random.randint(600, 1200)  # Heal 아이템 생성 텀 (10~20초)
 
     running = True
     while running:
@@ -40,6 +45,7 @@ def run_game():
         # 가시 아이템 생성 (랜덤 타이밍)
         if spike_item is None and spike_spawn_timer <= 0:
             spike_item = SpikeItem()
+            spike_spawn_timer = random.randint(*SPIKE_RESPAWN_TIME_RANGE)  # 새로운 타이머 설정
         elif spike_item is None:
             spike_spawn_timer -= 1  # 가시 아이템 생성 타이머 감소
 
@@ -51,12 +57,28 @@ def run_game():
             if red_square.check_spike_collision(spike_item):
                 red_square.add_spike()
                 spike_item = None  # 가시 아이템 제거
-                spike_spawn_timer = random.randint(*SPIKE_RESPAWN_TIME_RANGE)  # 다음 가시 아이템 생성 타이머 설정
-
             elif blue_square.check_spike_collision(spike_item):
                 blue_square.add_spike()
                 spike_item = None  # 가시 아이템 제거
-                spike_spawn_timer = random.randint(*SPIKE_RESPAWN_TIME_RANGE)  # 다음 가시 아이템 생성 타이머 설정
+
+        # ✅ Heal 아이템 생성 로직 수정
+        if heal_item is None and heal_spawn_timer <= 0:
+            heal_item = HealItem()
+            heal_spawn_timer = random.randint(900, 1500)  # Heal 아이템은 가시 아이템보다 더 늦게 생성됨
+        elif heal_item is None:
+            heal_spawn_timer -= 1  # Heal 아이템 생성 타이머 감소
+
+        # Heal 아이템이 존재하면 화면에 그림
+        if heal_item:
+            heal_item.draw(screen)
+
+            # Heal 아이템 충돌 체크
+            if red_square.check_heal_collision(heal_item):
+                red_square.heal(20)
+                heal_item = None  # Heal 아이템 제거
+            elif blue_square.check_heal_collision(heal_item):
+                blue_square.heal(20)
+                heal_item = None  # Heal 아이템 제거
 
         # 사각형 그리기
         red_square.draw(screen)

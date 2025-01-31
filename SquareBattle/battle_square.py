@@ -136,3 +136,14 @@ class BattleSquare:
         self.spikes["left"] = False
         self.spikes["right"] = False
         print(f"{self.color} 사각형의 가시가 사라졌습니다!")
+
+    def check_heal_collision(self, heal_item):
+        """ Heal 아이템과 충돌했는지 확인 """
+        heal_rect = pygame.Rect(heal_item.x, heal_item.y, heal_item.size, heal_item.size)
+        my_rect = pygame.Rect(self.x, self.y, self.width, self.height)
+        return my_rect.colliderect(heal_rect)
+
+    def heal(self, amount):
+        """ HP 회복 (최대 100 제한) """
+        self.hp = min(100, self.hp + amount)
+        print(f"{self.color} 사각형이 HP {amount} 회복! 현재 HP: {self.hp}")
