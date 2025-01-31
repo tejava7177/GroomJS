@@ -67,13 +67,11 @@ class BattleSquare:
             draw_spike_line(self.x + self.width, self.y, self.x + self.width + 5, self.y + self.height, "vertical")
 
     def add_spike(self):
-        """ 사각형이 가시 아이템을 획득하면 가시 추가 및 랜덤 방향 변경 """
-        if not self.spikes["top"] and not self.spikes["bottom"]:
-            self.spikes["top"] = True
-            self.spikes["bottom"] = True
-        elif not self.spikes["left"] and not self.spikes["right"]:
-            self.spikes["left"] = True
-            self.spikes["right"] = True
+        """ 가시 아이템을 획득하면 네 개의 변 모두에 가시 추가 """
+        self.spikes["top"] = True
+        self.spikes["bottom"] = True
+        self.spikes["left"] = True
+        self.spikes["right"] = True
         self.random_bounce()  # 가시를 얻었을 때도 랜덤 방향으로 튕기기
 
     def check_spike_collision(self, spike_item):
@@ -91,13 +89,15 @@ class BattleSquare:
             # 가시 공격 판정
             if self.has_attacking_spike(other):
                 other.hp -= 10
-                # other.width = max(10, other.width - 2)  # 최소 크기 유지
-                # other.height = max(10, other.height - 2)
-                other.update_size()
+                other.update_size()  # 크기 및 속도 업데이트
                 print(f"{self.color} 사각형이 공격! {other.color} HP: {other.hp}")
+
+                # 공격 성공 후 가시 제거
+                self.remove_spikes()
 
             # 충돌하면 랜덤한 방향으로 튕기기
             self.random_bounce()
+            other.random_bounce()
             other.random_bounce()
 
     def has_attacking_spike(self, other):
@@ -128,3 +128,11 @@ class BattleSquare:
     def draw_spikes_update(self):
         """ 가시 크기를 사각형 크기에 맞게 조정 """
         spike_size = self.width // 10  # 사각형 크기에 맞게 가시 크기 재조정
+
+    def remove_spikes(self):
+        """ 공격 후 가시를 모두 제거 """
+        self.spikes["top"] = False
+        self.spikes["bottom"] = False
+        self.spikes["left"] = False
+        self.spikes["right"] = False
+        print(f"{self.color} 사각형의 가시가 사라졌습니다!")
