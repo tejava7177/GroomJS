@@ -1,5 +1,6 @@
 import pygame
 import random
+from draw_hpBar import draw_hp_bar  # HP 바 UI 불러오기
 from settings import WIDTH, HEIGHT, FPS, WHITE, SPIKE_RESPAWN_TIME_RANGE
 from battle_square import BattleSquare
 from spike_item import SpikeItem
@@ -60,6 +61,10 @@ def run_game():
         # 사각형 그리기
         red_square.draw(screen)
         blue_square.draw(screen)
+
+        # ✅ HP 바 그리기
+        draw_hp_bar(screen, 20, 20, red_square.hp // 10)  # 빨간 사각형 HP (왼쪽 상단)
+        draw_hp_bar(screen, WIDTH - 260, 20, blue_square.hp // 10)  # 파란 사각형 HP (오른쪽 상단)
 
         # 승패 체크
         if red_square.hp <= 0:

@@ -1,3 +1,5 @@
+import pygame
+
 def draw_hp_bar(screen, x, y, hp, max_hp=10):
     """ HP를 시각적으로 표시하는 바 (10칸 초록색 블록) """
     bar_width = 20  # 한 칸의 너비
