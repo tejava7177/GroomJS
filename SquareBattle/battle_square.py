@@ -72,7 +72,7 @@ class BattleSquare:
         self.spikes["bottom"] = True
         self.spikes["left"] = True
         self.spikes["right"] = True
-        self.random_bounce()  # 가시를 얻었을 때도 랜덤 방향으로 튕기기
+        #self.random_bounce()  # 가시를 얻었을 때도 랜덤 방향으로 튕기기
 
     def check_spike_collision(self, spike_item):
         """ 가시 아이템과 충돌했는지 확인 """
@@ -115,7 +115,7 @@ class BattleSquare:
     def update_size(self):
         """ HP가 10 감소할 때마다 크기 10% 감소, 속도 2% 증가 """
         scale_factor = 0.9  # 크기 10% 감소
-        speed_factor = 1.02  # 속도 2% 증가
+        speed_factor = 1.05  # 속도 5% 증가
 
         self.width = max(10, int(self.width * scale_factor))  # 최소 크기 10 유지
         self.height = max(10, int(self.height * scale_factor))
