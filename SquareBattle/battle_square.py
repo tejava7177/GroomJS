@@ -90,7 +90,7 @@ class BattleSquare:
         if self.spikes["right"]:
             draw_spike_line(self.x + self.width + 5, self.y, self.x + self.width + 10, self.y + self.height, "vertical")
 
-            
+
     def add_spike(self):
         """ 가시 아이템을 획득하면 네 개의 변 모두에 가시 추가 """
         self.spikes["top"] = True

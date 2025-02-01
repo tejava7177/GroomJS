@@ -16,6 +16,13 @@ def run_game():
     pygame.display.set_caption("Battle Square Game")
     clock = pygame.time.Clock()
 
+    # ✅ 배경 음악 로드 및 재생
+    pygame.mixer.init()
+    pygame.mixer.music.load("/Users/simjuheun/Desktop/개인프로젝트/MadeGame/SquareBattle/additional_function/sounds/backgroundmusic.mid")  # ✅ 배경 음악 파일 경로
+    pygame.mixer.music.set_volume(0.5)  # ✅ 볼륨 조절 (0.0 ~ 1.0)
+    pygame.mixer.music.play(-1)  # ✅ 무한 반복 재생
+
+
     # ✅ 녹화 객체 생성 및 녹화 시작
     recorder = GameRecorder(screen)
     recorder.start_recording()
@@ -114,8 +121,7 @@ def run_game():
 
 
         pygame.display.flip()
-        # ✅ 프레임을 기록
-        recorder.capture_frame()  # ✅ 실행 확인
+        recorder.capture_frame()      # ✅ 프레임을 기록
         clock.tick(FPS)
 
     recorder.stop_recording()
