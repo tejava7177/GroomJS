@@ -3,7 +3,7 @@ import random
 from settings import WIDTH, HEIGHT, SQUARE_SIZE, SQUARE_SPEED, INITIAL_HP
 
 class BattleSquare:
-    def __init__(self, x, y, color, controls="auto"):
+    def __init__(self, x, y, color, controls="auto" , image_path=None):
         self.x = x
         self.y = y
         self.color = color
@@ -13,6 +13,17 @@ class BattleSquare:
         self.speed_x = SQUARE_SPEED * random.choice([-1, 1])
         self.speed_y = SQUARE_SPEED * random.choice([-1, 1])
         self.spikes = {"top": False, "bottom": False, "left": False, "right": False}
+        self.image = None
+
+        # ✅ 예외 처리 추가 (image_path가 None이 아니면 로드)
+        if image_path:
+            try:
+                self.image = pygame.image.load(image_path)
+                self.image = pygame.transform.scale(self.image, (self.width, self.height))
+            except pygame.error as e:
+                print(f"이미지 로드 오류: {image_path} - {e}")
+                self.image = None  # 오류 발생 시 기본 색상 사각형 유지
+
 
     def move(self):
         """ 사각형 이동 처리 (벽에 부딪히면 단순 반사, 사각형끼리 충돌하면 랜덤 반사) """
@@ -30,10 +41,13 @@ class BattleSquare:
         self.speed_x = SQUARE_SPEED * random.choice([-1, 1])
         self.speed_y = SQUARE_SPEED * random.choice([-1, 1])
 
+
     def draw(self, screen):
-        """ 사각형을 그리는 함수 """
-        pygame.draw.rect(screen, self.color, (self.x, self.y, self.width, self.height))
-        self.draw_spikes(screen)
+        """ 사각형 또는 이미지를 그리는 함수 """
+        if self.image:
+            screen.blit(self.image, (self.x, self.y))
+        else:
+            pygame.draw.rect(screen, self.color, (self.x, self.y, self.width, self.height))
 
     def draw_spikes(self, screen):
         """ 가시를 특정 변에 그리는 함수 """
