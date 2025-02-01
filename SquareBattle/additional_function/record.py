@@ -1,8 +1,8 @@
 import cv2
 import pygame
 import numpy as np
-import pyaudio
-import wave
+import sounddevice as sd
+import soundfile as sf
 import threading
 import subprocess
 import os
@@ -18,16 +18,13 @@ class GameRecorder:
         self.video_writer = None
         self.recording = False
         self.audio_thread = None  # 오디오 녹음용 스레드
-
-        # ✅ 오디오 녹음 관련 설정
-        self.audio_format = pyaudio.paInt16
+        self.samplerate = 44100
         self.channels = 2
-        self.rate = 44100
-        self.chunk = 1024
-        self.audio_interface = pyaudio.PyAudio()
 
     def start_recording(self):
         """ 녹화 시작 (비디오 + 오디오) """
+        print(f"🎥 녹화 시작! 파일 저장: {self.output_filename}")
+
         fourcc = cv2.VideoWriter_fourcc(*"mp4v")
         self.video_writer = cv2.VideoWriter(self.output_filename, fourcc, self.fps, (self.screen.get_width(), self.screen.get_height()))
 
@@ -36,9 +33,7 @@ class GameRecorder:
             return
 
         self.recording = True
-        print(f"🎥 녹화 시작! 파일 저장: {self.output_filename}")
-
-        # ✅ 오디오 녹음 시작 (별도 스레드 실행)
+        print("🎤 녹음 스레드 실행")
         self.audio_thread = threading.Thread(target=self.record_audio)
         self.audio_thread.start()
 
@@ -71,35 +66,43 @@ class GameRecorder:
             self.merge_audio_video()
 
     def record_audio(self):
-        """ Pygame 내부 사운드를 녹음 """
-        print("🎤 오디오 녹음 시작...")
+        """ Pygame에서 실행되는 시스템 사운드를 직접 녹음 (Mac 환경) """
+        samplerate = 44100  # ✅ 오디오 샘플링 속도
+        channels = 2  # ✅ 스테레오 녹음
+        duration = 60  # ✅ 녹음 길이 (초)
 
-        stream = self.audio_interface.open(format=self.audio_format,
-                                           channels=self.channels,
-                                           rate=self.rate,
-                                           input=True,
-                                           frames_per_buffer=self.chunk)
+        print("🎤 시스템 사운드 녹음 시작...")
 
-        frames = []
-        while self.recording:
-            data = stream.read(self.chunk, exception_on_overflow=False)
-            frames.append(data)
+        # ✅ BlackHole이 올바르게 설치되었는지 확인
+        devices = sd.query_devices()
+        blackhole_device = None
+        for i, device in enumerate(devices):
+            if "BlackHole" in device["name"]:
+                blackhole_device = i
+                break
 
-        print("🎤 오디오 녹음 종료!")
-        stream.stop_stream()
-        stream.close()
+        if blackhole_device is None:
+            print("❌ 'BlackHole' 오디오 장치를 찾을 수 없습니다.")
+            return
+
+        print(f"✅ 'BlackHole' 오디오 장치 선택: ID {blackhole_device}")
+
+        # ✅ BlackHole을 통해 시스템 사운드 녹음
+        audio_data = sd.rec(int(samplerate * duration), samplerate=samplerate, channels=channels, dtype="int16",
+                            device=blackhole_device)
+        sd.wait()
+        print("🎤 녹음 완료!")
 
         # ✅ WAV 파일로 저장
-        with wave.open(self.audio_filename, "wb") as wf:
-            wf.setnchannels(self.channels)
-            wf.setsampwidth(self.audio_interface.get_sample_size(self.audio_format))
-            wf.setframerate(self.rate)
-            wf.writeframes(b''.join(frames))
-
+        sf.write(self.audio_filename, audio_data, samplerate)
         print(f"✅ 오디오 파일 저장 완료: {self.audio_filename}")
 
     def merge_audio_video(self):
         """ FFmpeg를 사용하여 비디오와 오디오를 합침 """
+        if not os.path.exists(self.audio_filename):
+            print("❌ 오디오 파일이 존재하지 않습니다. 비디오만 저장됩니다.")
+            return
+
         print(f"🔄 FFmpeg로 {self.converted_filename} 변환 중...")
 
         command = [
