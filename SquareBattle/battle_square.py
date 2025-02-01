@@ -15,15 +15,21 @@ class BattleSquare:
         self.spikes = {"top": False, "bottom": False, "left": False, "right": False}
         self.image = None
 
-        # ✅ 예외 처리 추가 (image_path가 None이 아니면 로드)
+        # ✅ 이미지 로드 및 크기 조절 (사각형보다 작게)
         if image_path:
             try:
                 self.image = pygame.image.load(image_path)
-                self.image = pygame.transform.scale(self.image, (self.width, self.height))
+                self.scale_image()
             except pygame.error as e:
                 print(f"이미지 로드 오류: {image_path} - {e}")
-                self.image = None  # 오류 발생 시 기본 색상 사각형 유지
+                self.image = None  # 오류 발생 시 기본 사각형 유지
 
+    def scale_image(self):
+        """ 이미지 크기를 사각형 대비 80% 크기로 조정 """
+        if self.image:
+            img_width = int(self.width * 0.8)
+            img_height = int(self.height * 0.8)
+            self.image = pygame.transform.scale(self.image, (img_width, img_height))
 
     def move(self):
         """ 사각형 이동 처리 (벽에 부딪히면 단순 반사, 사각형끼리 충돌하면 랜덤 반사) """
@@ -41,45 +47,50 @@ class BattleSquare:
         self.speed_x = SQUARE_SPEED * random.choice([-1, 1])
         self.speed_y = SQUARE_SPEED * random.choice([-1, 1])
 
-
     def draw(self, screen):
-        """ 사각형 또는 이미지를 그리는 함수 """
+        """ 사각형 내부에 이미지 배치 """
+        pygame.draw.rect(screen, self.color, (self.x, self.y, self.width, self.height))  # 사각형 먼저 그림
+        self.draw_spikes(screen)  # 가시를 사각형 위에 그림
+
         if self.image:
-            screen.blit(self.image, (self.x, self.y))
-        else:
-            pygame.draw.rect(screen, self.color, (self.x, self.y, self.width, self.height))
+            # ✅ 이미지의 중앙 정렬 (사각형 내부)
+            img_x = self.x + (self.width - self.image.get_width()) // 2
+            img_y = self.y + (self.height - self.image.get_height()) // 2
+            screen.blit(self.image, (img_x, img_y))  # 이미지 그리기
 
     def draw_spikes(self, screen):
-        """ 가시를 특정 변에 그리는 함수 """
+        """ 가시를 사각형 바깥에 배치하여 이미지에 가려지지 않도록 설정 """
         spike_color = (0, 0, 0)  # 가시는 검은색
+        spike_size = self.width // 10  # 가시 크기
 
         def draw_spike_line(start_x, start_y, end_x, end_y, direction):
-            spike_width = self.width // 10  # 가시 간격
             for i in range(10):
                 if direction == "horizontal":
-                    spike_x = start_x + i * spike_width
+                    spike_x = start_x + i * spike_size
                     pygame.draw.polygon(screen, spike_color, [
                         (spike_x, start_y),
-                        (spike_x + spike_width // 2, end_y),
-                        (spike_x + spike_width, start_y)
+                        (spike_x + spike_size // 2, end_y),
+                        (spike_x + spike_size, start_y)
                     ])
                 else:
-                    spike_y = start_y + i * spike_width
+                    spike_y = start_y + i * spike_size
                     pygame.draw.polygon(screen, spike_color, [
                         (start_x, spike_y),
-                        (end_x, spike_y + spike_width // 2),
-                        (start_x, spike_y + spike_width)
+                        (end_x, spike_y + spike_size // 2),
+                        (start_x, spike_y + spike_size)
                     ])
 
         if self.spikes["top"]:
-            draw_spike_line(self.x, self.y, self.x + self.width, self.y - 5, "horizontal")
+            draw_spike_line(self.x, self.y - 5, self.x + self.width, self.y - 10, "horizontal")
         if self.spikes["bottom"]:
-            draw_spike_line(self.x, self.y + self.height, self.x + self.width, self.y + self.height + 5, "horizontal")
+            draw_spike_line(self.x, self.y + self.height + 5, self.x + self.width, self.y + self.height + 10,
+                            "horizontal")
         if self.spikes["left"]:
-            draw_spike_line(self.x, self.y, self.x - 5, self.y + self.height, "vertical")
+            draw_spike_line(self.x - 5, self.y, self.x - 10, self.y + self.height, "vertical")
         if self.spikes["right"]:
-            draw_spike_line(self.x + self.width, self.y, self.x + self.width + 5, self.y + self.height, "vertical")
+            draw_spike_line(self.x + self.width + 5, self.y, self.x + self.width + 10, self.y + self.height, "vertical")
 
+            
     def add_spike(self):
         """ 가시 아이템을 획득하면 네 개의 변 모두에 가시 추가 """
         self.spikes["top"] = True
