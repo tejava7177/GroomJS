@@ -27,6 +27,8 @@ def run_game():
     recorder = GameRecorder(screen)
     recorder.start_recording()
 
+
+
     # ✅ 이미지 경로를 코드 내에서 직접 지정
     red_image_path = "/Users/simjuheun/Downloads/About_WildBird-mobile.jpg"
     blue_image_path = "/Users/simjuheun/Downloads/d0d236718ee188ca9c3c8999504d2250.jpg"  # 파란색 사각형은 기본 사각형 유지

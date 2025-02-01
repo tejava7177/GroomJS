@@ -7,8 +7,10 @@
 # p.terminate()
 
 
+
 import sounddevice as sd
 
 print("🔍 사용 가능한 오디오 장치 목록:")
 device_list = sd.query_devices()
-print(device_list)
+for i, device in enumerate(device_list):
+    print(f"ID {i}: {device}")

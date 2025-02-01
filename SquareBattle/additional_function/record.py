@@ -20,13 +20,29 @@ class GameRecorder:
         self.audio_thread = None  # 오디오 녹음용 스레드
         self.samplerate = 44100
         self.channels = 2
+        self.blackhole_device = self.get_blackhole_device()
+
+    def get_blackhole_device(self):
+        """ ✅ 정확한 'BlackHole 2ch' 오디오 장치를 자동으로 선택 """
+        devices = sd.query_devices()
+        for i, device in enumerate(devices):
+            if device["name"] == "BlackHole 2ch":  # ✅ 정확한 이름 매칭
+                max_input_channels = device.get("max_input_channels", 0)  # ✅ 안전한 접근
+                if max_input_channels > 0:
+                    print(f"✅ 'BlackHole 2ch' 오디오 장치 선택: ID {i}")
+                    return i
+        print("❌ 'BlackHole 2ch' 오디오 장치를 찾을 수 없습니다.")
+        return None
 
     def start_recording(self):
         """ 녹화 시작 (비디오 + 오디오) """
         print(f"🎥 녹화 시작! 파일 저장: {self.output_filename}")
 
         fourcc = cv2.VideoWriter_fourcc(*"mp4v")
-        self.video_writer = cv2.VideoWriter(self.output_filename, fourcc, self.fps, (self.screen.get_width(), self.screen.get_height()))
+        self.video_writer = cv2.VideoWriter(
+            self.output_filename, fourcc, self.fps,
+            (self.screen.get_width(), self.screen.get_height())
+        )
 
         if not self.video_writer.isOpened():
             print("❌ 오류: 비디오 파일을 생성할 수 없습니다.")
@@ -67,58 +83,69 @@ class GameRecorder:
 
     def record_audio(self):
         """ Pygame에서 실행되는 시스템 사운드를 직접 녹음 (Mac 환경) """
-        samplerate = 44100  # ✅ 오디오 샘플링 속도
-        channels = 2  # ✅ 스테레오 녹음
-        duration = 60  # ✅ 녹음 길이 (초)
+        if self.blackhole_device is None:
+            print("❌ 녹음을 진행할 수 없습니다. BlackHole 장치가 감지되지 않음.")
+            return
 
         print("🎤 시스템 사운드 녹음 시작...")
 
-        # ✅ BlackHole이 올바르게 설치되었는지 확인
-        devices = sd.query_devices()
-        blackhole_device = None
-        for i, device in enumerate(devices):
-            if "BlackHole" in device["name"]:
-                blackhole_device = i
-                break
-
-        if blackhole_device is None:
-            print("❌ 'BlackHole' 오디오 장치를 찾을 수 없습니다.")
-            return
-
-        print(f"✅ 'BlackHole' 오디오 장치 선택: ID {blackhole_device}")
+        duration = 60  # ✅ 녹음 길이 (초)
+        self.samplerate = 48000  # ✅ BlackHole 기본 샘플링 속도 적용
+        self.channels = 2  # ✅ 스테레오 녹음
 
         # ✅ BlackHole을 통해 시스템 사운드 녹음
-        audio_data = sd.rec(int(samplerate * duration), samplerate=samplerate, channels=channels, dtype="int16",
-                            device=blackhole_device)
+        audio_data = sd.rec(
+            int(self.samplerate * duration),
+            samplerate=self.samplerate,
+            channels=self.channels,
+            dtype="int16",
+            device=self.blackhole_device
+        )
         sd.wait()
         print("🎤 녹음 완료!")
 
-        # ✅ WAV 파일로 저장
-        sf.write(self.audio_filename, audio_data, samplerate)
+        # ✅ 녹음된 데이터가 비어 있는지 확인
+        if audio_data is None or np.all(audio_data == 0):
+            print("⚠️ 녹음된 데이터가 없습니다. WAV 파일을 생성하지 않습니다.")
+            return
+
+        print(f"🎤 오디오 데이터 크기: {audio_data.shape}, 최대값: {np.max(audio_data)}, 최소값: {np.min(audio_data)}")
+
+        # ✅ WAV 파일 저장
+        sf.write(self.audio_filename, audio_data, self.samplerate)
         print(f"✅ 오디오 파일 저장 완료: {self.audio_filename}")
+        print(f"🔍 저장된 오디오 파일 경로: {os.path.abspath(self.audio_filename)}")
 
     def merge_audio_video(self):
-        """ FFmpeg를 사용하여 비디오와 오디오를 합침 """
-        if not os.path.exists(self.audio_filename):
+        """ 🎥 FFmpeg를 사용하여 비디오(`gameplay.mp4`)와 오디오(`audio.wav`)를 합쳐서 `gamePlayVideo` 디렉토리에 저장 """
+
+        # ✅ 저장할 디렉토리 설정
+        save_dir = "/Users/simjuheun/Desktop/개인프로젝트/MadeGame/SquareBattle/gamePlayVideo"
+        os.makedirs(save_dir, exist_ok=True)  # ✅ 디렉토리가 없으면 자동 생성
+
+        # ✅ 저장할 파일 경로
+        output_path = os.path.join(save_dir, "gameplay_with_audio.mp4")
+
+        if not os.path.exists("audio.wav"):
             print("❌ 오디오 파일이 존재하지 않습니다. 비디오만 저장됩니다.")
             return
 
-        print(f"🔄 FFmpeg로 {self.converted_filename} 변환 중...")
+        print(f"🔄 FFmpeg로 {output_path} 변환 중...")
 
         command = [
-            "ffmpeg", "-i", self.output_filename,  # ✅ 비디오 입력
-            "-i", self.audio_filename,  # ✅ 오디오 입력
+            "ffmpeg", "-i", "gameplay.mp4",  # ✅ 비디오 입력
+            "-i", "audio.wav",  # ✅ 오디오 입력
             "-c:v", "libx264", "-c:a", "aac", "-strict", "experimental",  # ✅ 비디오 & 오디오 설정
-            self.converted_filename
+            output_path  # ✅ 저장할 위치 지정
         ]
 
         try:
             subprocess.run(command, check=True)
-            print(f"✅ 변환 완료! {self.converted_filename} 저장됨.")
+            print(f"✅ 변환 완료! 저장된 파일: {output_path}")
 
-            # ✅ 원본 파일 삭제
-            os.remove(self.output_filename)
-            os.remove(self.audio_filename)
+            # ✅ 원본 파일 삭제 (필요하면 주석 해제)
+            os.remove("gameplay.mp4")
+            os.remove("audio.wav")
             print(f"🗑️ 원본 파일 삭제 완료!")
         except subprocess.CalledProcessError as e:
             print(f"❌ 변환 실패: {e}")
