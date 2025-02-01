@@ -6,6 +6,7 @@ from heal_item import HealItem  # HP 회복 아이템 추가
 from settings import WIDTH, HEIGHT, FPS, WHITE, SPIKE_RESPAWN_TIME_RANGE
 from battle_square import BattleSquare
 from spike_item import SpikeItem
+from additional_function.record import GameRecorder
 
 
 def run_game():
@@ -14,6 +15,17 @@ def run_game():
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("Battle Square Game")
     clock = pygame.time.Clock()
+
+    # ✅ 배경 음악 로드 및 재생
+    pygame.mixer.init()
+    pygame.mixer.music.load("/Users/simjuheun/Desktop/개인프로젝트/MadeGame/SquareBattle/additional_function/sounds/backgroundmusic.mid")  # ✅ 배경 음악 파일 경로
+    pygame.mixer.music.set_volume(0.5)  # ✅ 볼륨 조절 (0.0 ~ 1.0)
+    pygame.mixer.music.play(-1)  # ✅ 무한 반복 재생
+
+
+    # ✅ 녹화 객체 생성 및 녹화 시작
+    recorder = GameRecorder(screen)
+    recorder.start_recording()
 
     # ✅ 이미지 경로를 코드 내에서 직접 지정
     red_image_path = "/Users/simjuheun/Downloads/About_WildBird-mobile.jpg"
@@ -43,6 +55,7 @@ def run_game():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+
 
         # ✅ 사각형 이동
         red_square.move()
@@ -106,7 +119,10 @@ def run_game():
             print("Red Wins!")
             running = False
 
+
         pygame.display.flip()
+        recorder.capture_frame()      # ✅ 프레임을 기록
         clock.tick(FPS)
 
+    recorder.stop_recording()
     pygame.quit()
