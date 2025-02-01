@@ -1,6 +1,6 @@
 import pygame
 import random
-import os  # ✅ 이미지 경로 확인을 위한 os 모듈 추가
+from validate_image_path import validate_image_path
 from draw_hpBar import draw_hp_bar  # HP 바 UI 불러오기
 from heal_item import HealItem  # HP 회복 아이템 추가
 from settings import WIDTH, HEIGHT, FPS, WHITE, SPIKE_RESPAWN_TIME_RANGE
@@ -19,16 +19,9 @@ def run_game():
     red_image_path = "/Users/simjuheun/Downloads/About_WildBird-mobile.jpg"
     blue_image_path = "/Users/simjuheun/Downloads/d0d236718ee188ca9c3c8999504d2250.jpg"  # 파란색 사각형은 기본 사각형 유지
 
-    # ✅ 이미지 경로가 존재하는지 확인 (빨간색 사각형)
-    if not os.path.exists(red_image_path):
-        print(f"⚠️ 경고: '{red_image_path}' 경로에 이미지 파일이 존재하지 않습니다. 기본 사각형이 사용됩니다.")
-        red_image_path = None  # 이미지가 없으면 기본 사각형으로 표시
-
-     # ✅ 이미지 경로가 존재하는지 확인 (파란색 사각형)
-    if not os.path.exists(blue_image_path):
-        print(f"⚠️ 경고: '{blue_image_path}' 경로에 이미지 파일이 존재하지 않습니다. 기본 사각형이 사용됩니다.")
-        blue_image_path = None  # 이미지가 없으면 기본 사각형으로 표시
-
+    # ✅ 예외 처리 함수 사용 (중복 제거)
+    red_image_path = validate_image_path(red_image_path, "빨간색 사각형")
+    blue_image_path = validate_image_path(blue_image_path, "파란색 사각형")
 
     # ✅ 사각형 객체 생성 (이미지 포함)
     red_square = BattleSquare(x=100, y=200, color=(255, 0, 0), controls="auto", image_path=red_image_path)
