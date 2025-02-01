@@ -17,16 +17,22 @@ def run_game():
 
     # ✅ 이미지 경로를 코드 내에서 직접 지정
     red_image_path = "/Users/simjuheun/Downloads/About_WildBird-mobile.jpg"
-    blue_image_path = None  # 파란색 사각형은 기본 사각형 유지
+    blue_image_path = "/Users/simjuheun/Downloads/d0d236718ee188ca9c3c8999504d2250.jpg"  # 파란색 사각형은 기본 사각형 유지
 
-    # ✅ 이미지 경로가 존재하는지 확인
+    # ✅ 이미지 경로가 존재하는지 확인 (빨간색 사각형)
     if not os.path.exists(red_image_path):
         print(f"⚠️ 경고: '{red_image_path}' 경로에 이미지 파일이 존재하지 않습니다. 기본 사각형이 사용됩니다.")
         red_image_path = None  # 이미지가 없으면 기본 사각형으로 표시
 
+     # ✅ 이미지 경로가 존재하는지 확인 (파란색 사각형)
+    if not os.path.exists(blue_image_path):
+        print(f"⚠️ 경고: '{blue_image_path}' 경로에 이미지 파일이 존재하지 않습니다. 기본 사각형이 사용됩니다.")
+        blue_image_path = None  # 이미지가 없으면 기본 사각형으로 표시
+
+
     # ✅ 사각형 객체 생성 (이미지 포함)
     red_square = BattleSquare(x=100, y=200, color=(255, 0, 0), controls="auto", image_path=red_image_path)
-    blue_square = BattleSquare(x=600, y=200, color=(0, 0, 255), controls="auto")
+    blue_square = BattleSquare(x=600, y=200, color=(0, 0, 255), controls="auto", image_path=blue_image_path)
 
     # 가시 아이템 (초기에는 None, 이후 랜덤 생성)
     spike_item = None
