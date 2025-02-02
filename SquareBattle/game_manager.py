@@ -24,14 +24,14 @@ def run_game():
 
 
     # ✅ 녹화 객체 생성 및 녹화 시작
-    recorder = GameRecorder(screen)
-    recorder.start_recording()
+    # recorder = GameRecorder(screen)
+    # recorder.start_recording()
 
 
 
     # ✅ 이미지 경로를 코드 내에서 직접 지정
-    red_image_path = "/Users/simjuheun/Downloads/About_WildBird-mobile.jpg"
-    blue_image_path = "/Users/simjuheun/Downloads/d0d236718ee188ca9c3c8999504d2250.jpg"  # 파란색 사각형은 기본 사각형 유지
+    red_image_path = "/Users/simjuheun/Downloads/About_WildBird-mobile1.jpg"
+    blue_image_path = "/Users/simjuheun/Downloads/d0d236718ee188ca9c3c8999504d22501.jpg"
 
     # ✅ 예외 처리 함수 사용 (중복 제거)
     red_image_path = validate_image_path(red_image_path, "빨간색 사각형")
@@ -123,8 +123,8 @@ def run_game():
 
 
         pygame.display.flip()
-        recorder.capture_frame()      # ✅ 프레임을 기록
+        #recorder.capture_frame()      # ✅ 프레임을 기록
         clock.tick(FPS)
 
-    recorder.stop_recording()
+    #recorder.stop_recording()
     pygame.quit()

@@ -32,15 +32,38 @@ class BattleSquare:
             self.image = pygame.transform.scale(self.image, (img_width, img_height))
 
     def move(self):
-        """ 사각형 이동 처리 (벽에 부딪히면 단순 반사, 사각형끼리 충돌하면 랜덤 반사) """
+        """ 사각형 이동 처리 (벽 충돌 시 자연스러운 반사 및 떨림 방지) """
         self.x += self.speed_x
         self.y += self.speed_y
 
-        # 벽에 부딪히면 단순히 반대 방향으로 변경
-        if self.x <= 0 or self.x + self.width >= WIDTH:
-            self.speed_x *= -1  # 좌우 반사
-        if self.y <= 0 or self.y + self.height >= HEIGHT:
-            self.speed_y *= -1  # 상하 반사
+        # ✅ 좌우 벽 충돌 처리
+        if self.x <= 0:  # 왼쪽 벽 충돌
+            self.x = 1  # 살짝 이동하여 벽에 붙지 않도록
+            self.speed_x *= -1  # 반사
+            self.speed_y += random.uniform(-0.3, 0.3)  # 무작위 요소 추가 (떨림 방지)
+
+        elif self.x + self.width >= WIDTH:  # 오른쪽 벽 충돌
+            self.x = WIDTH - self.width - 1  # 살짝 이동하여 벽에 붙지 않도록
+            self.speed_x *= -1
+            self.speed_y += random.uniform(-0.3, 0.3)
+
+        # ✅ 상하 벽 충돌 처리
+        if self.y <= 0:  # 위쪽 벽 충돌
+            self.y = 1  # 살짝 이동하여 벽에 붙지 않도록
+            self.speed_y *= -1
+            self.speed_x += random.uniform(-0.3, 0.3)
+
+        elif self.y + self.height >= HEIGHT:  # 아래쪽 벽 충돌
+            self.y = HEIGHT - self.height - 1  # 살짝 이동하여 벽에 붙지 않도록
+            self.speed_y *= -1
+            self.speed_x += random.uniform(-0.3, 0.3)
+
+        # ✅ 너무 작은 속도 방지 (벽에 붙어서 멈추는 문제 해결)
+        min_speed = 1.5  # 최소 속도
+        if abs(self.speed_x) < min_speed:
+            self.speed_x = min_speed * (1 if self.speed_x > 0 else -1)
+        if abs(self.speed_y) < min_speed:
+            self.speed_y = min_speed * (1 if self.speed_y > 0 else -1)
 
     def random_bounce(self):
         """ 랜덤한 방향으로 튕기기 """
@@ -120,10 +143,29 @@ class BattleSquare:
                 # 공격 성공 후 가시 제거
                 self.remove_spikes()
 
+            # ✅ 겹침 방지: 충돌 후 일정 거리 밀어내기
+            overlap_x = (self.width + other.width) / 40
+            overlap_y = (self.height + other.height) / 40
+
+            if self.x < other.x:
+                self.x -= overlap_x
+                other.x += overlap_x
+            else:
+                self.x += overlap_x
+                other.x -= overlap_x
+
+            if self.y < other.y:
+                self.y -= overlap_y
+                other.y += overlap_y
+            else:
+                self.y += overlap_y
+                other.y -= overlap_y
+
             # 충돌하면 랜덤한 방향으로 튕기기
             self.random_bounce()
             other.random_bounce()
-            other.random_bounce()
+
+
 
     def has_attacking_spike(self, other):
         """ 상대방이 내 가시에 닿았는지 확인 """
