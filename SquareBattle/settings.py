@@ -1,7 +1,7 @@
 import pygame
 
 # 화면 크기
-WIDTH, HEIGHT = 800, 600
+WIDTH, HEIGHT = 550, 500
 
 # 색상 정의
 WHITE = (255, 255, 255)
@@ -18,9 +18,9 @@ INITIAL_SPAWN_TIME = 100  # 2~3초
 
 # 사각형 기본 설정
 INITIAL_HP = 100  # 사각형의 초기 HP (Power)
-SQUARE_SIZE = 150  # 사각형 기본 크기
-SQUARE_SPEED = 5  # 사각형 이동 속도
+SQUARE_SIZE = 120  # 사각형 기본 크기
+SQUARE_SPEED = 6  # 사각형 이동 속도
 
 # 가시 요소 관련 설정
-SPIKE_ITEM_SIZE = 40  # 가시 아이템 크기
-SPIKE_RESPAWN_TIME_RANGE = (180, 600)  # 가시 아이템 생성 대기 시간 범위 (3초~10초)
+SPIKE_ITEM_SIZE = 25  # 가시 아이템 크기
+SPIKE_RESPAWN_TIME_RANGE = (60, 180)  # 1초 ~ 3초 (기존보다 빠르게)
