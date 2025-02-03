@@ -25,6 +25,22 @@ class BattleSquare:
                 print(f"이미지 로드 오류: {image_path} - {e}")
                 self.image = None  # 오류 발생 시 기본 사각형 유지
 
+    def has_spike(self):
+        """ 사각형이 가시를 가지고 있는지 확인하는 메서드 """
+        return any(self.spikes.values())  # ✅ 하나라도 True이면 가시가 있는 것
+
+    def add_spike(self):
+        """ 가시를 획득하면 네 개의 변 모두에 가시 추가 """
+        self.spikes = {"top": True, "bottom": True, "left": True, "right": True}
+        print(f"🦔 {self.color} 사각형이 가시를 얻음!")
+
+    def remove_spikes(self):
+        """ 공격 후 가시를 모두 제거 """
+        self.spikes = {"top": False, "bottom": False, "left": False, "right": False}
+        print(f"❌ {self.color} 사각형의 가시가 사라졌습니다!")
+
+
+
     def scale_image(self):
         """ 이미지 크기를 사각형 대비 80% 크기로 조정 """
         if self.image:
