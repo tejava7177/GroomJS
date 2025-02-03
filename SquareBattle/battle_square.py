@@ -1,5 +1,6 @@
 import pygame
 import random
+import math
 from settings import WIDTH, HEIGHT, SQUARE_SIZE, SQUARE_SPEED, INITIAL_HP
 
 class BattleSquare:
@@ -120,6 +121,7 @@ class BattleSquare:
         self.spikes["bottom"] = True
         self.spikes["left"] = True
         self.spikes["right"] = True
+        print(f"🦔 {self.color} 사각형이 가시를 얻음! 현재 가시 상태: {self.spikes}")
         #self.random_bounce()  # 가시를 얻었을 때도 랜덤 방향으로 튕기기
 
     def check_spike_collision(self, spike_item):
@@ -128,22 +130,76 @@ class BattleSquare:
         my_rect = pygame.Rect(self.x, self.y, self.width, self.height)
         return my_rect.colliderect(spike_rect)
 
+    # def handle_collision(self, other):
+    #     """ 상대 사각형과의 충돌 처리 """
+    #     my_rect = pygame.Rect(self.x, self.y, self.width, self.height)
+    #     other_rect = pygame.Rect(other.x, other.y, other.width, other.height)
+    #
+    #     if my_rect.colliderect(other_rect):
+    #         print(f"🔍 {self.color} 사각형 충돌 감지!")
+    #         # 가시 공격 판정
+    #         if self.has_attacking_spike(other):
+    #             other.hp -= 10
+    #             other.update_size()  # 크기 및 속도 업데이트
+    #             print(f"{self.color} 사각형이 공격! {other.color} HP: {other.hp}")
+    #
+    #             # 공격 성공 후 가시 제거
+    #             self.remove_spikes()
+    #
+    #         # ✅ 겹침 방지: 충돌 후 일정 거리 밀어내기
+    #         overlap_x = (self.width + other.width) / 40
+    #         overlap_y = (self.height + other.height) / 40
+    #
+    #         if self.x < other.x:
+    #             self.x -= overlap_x
+    #             other.x += overlap_x
+    #         else:
+    #             self.x += overlap_x
+    #             other.x -= overlap_x
+    #
+    #         if self.y < other.y:
+    #             self.y -= overlap_y
+    #             other.y += overlap_y
+    #         else:
+    #             self.y += overlap_y
+    #             other.y -= overlap_y
+    #
+    #         # 충돌하면 랜덤한 방향으로 튕기기
+    #         self.random_bounce()
+    #         other.random_bounce()
+    import math
+
     def handle_collision(self, other):
-        """ 상대 사각형과의 충돌 처리 """
+        """ 상대 사각형과의 충돌 처리 (한 번만 실행) """
         my_rect = pygame.Rect(self.x, self.y, self.width, self.height)
         other_rect = pygame.Rect(other.x, other.y, other.width, other.height)
 
-        if my_rect.colliderect(other_rect):
-            # 가시 공격 판정
+        # ✅ 두 사각형의 중심 좌표 계산
+        my_center_x, my_center_y = self.x + self.width / 2, self.y + self.height / 2
+        other_center_x, other_center_y = other.x + other.width / 2, other.y + other.height / 2
+
+        # ✅ 두 사각형 간의 거리 계산
+        distance = math.sqrt((my_center_x - other_center_x) ** 2 + (my_center_y - other_center_y) ** 2)
+        collision_threshold = (self.width + other.width) / 2 * 0.9  # 90% 크기 내에서 충돌 감지
+
+        # ✅ 충돌 감지
+        if my_rect.colliderect(other_rect) or distance < collision_threshold:
+            print(f"🔍 {self.color} 사각형 & {other.color} 사각형 충돌 감지!")
+
+            # ✅ 공격 판정 (양방향)
             if self.has_attacking_spike(other):
                 other.hp -= 10
-                other.update_size()  # 크기 및 속도 업데이트
-                print(f"{self.color} 사각형이 공격! {other.color} HP: {other.hp}")
-
-                # 공격 성공 후 가시 제거
+                other.update_size()
+                print(f"💥 {self.color} 사각형이 공격! {other.color} HP: {other.hp}")
                 self.remove_spikes()
 
-            # ✅ 겹침 방지: 충돌 후 일정 거리 밀어내기
+            if other.has_attacking_spike(self):
+                self.hp -= 10
+                self.update_size()
+                print(f"💥 {other.color} 사각형이 공격! {self.color} HP: {self.hp}")
+                other.remove_spikes()
+
+            # ✅ 겹침 방지 (양쪽 밀어내기)
             overlap_x = (self.width + other.width) / 40
             overlap_y = (self.height + other.height) / 40
 
@@ -161,10 +217,9 @@ class BattleSquare:
                 self.y += overlap_y
                 other.y -= overlap_y
 
-            # 충돌하면 랜덤한 방향으로 튕기기
+            # ✅ 충돌하면 랜덤한 방향으로 튕기기
             self.random_bounce()
             other.random_bounce()
-
 
 
     def has_attacking_spike(self, other):

@@ -64,8 +64,8 @@ def run_game():
         blue_square.move()
 
         # ✅ 사각형끼리 충돌 감지 및 반응
-        red_square.handle_collision(blue_square)
-        blue_square.handle_collision(red_square)
+        if red_square.handle_collision(blue_square):  # ✅ 충돌 감지 시
+            print("🚀 충돌이 감지되었습니다!")
 
         # ✅ 가시 아이템 생성 (랜덤 타이밍)
         if spike_item is None and spike_spawn_timer <= 0:
