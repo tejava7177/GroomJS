@@ -23,8 +23,8 @@ def run_game():
     pygame.mixer.music.play(-1)  # ✅ 무한 반복 재생
 
     # ✅ 이미지 경로 설정 및 검증
-    red_image_path = validate_image_path("/Users/simjuheun/Downloads/About_WildBird-mobile1.jpg", "빨간색 사각형")
-    blue_image_path = validate_image_path("/Users/simjuheun/Downloads/d0d236718ee188ca9c3c8999504d22501.jpg", "파란색 사각형")
+    red_image_path = validate_image_path("/Users/simjuheun/Downloads/About_WildBird-mobile.jpg", "빨간색 사각형")
+    blue_image_path = validate_image_path("/Users/simjuheun/Downloads/d0d236718ee188ca9c3c8999504d2250.jpg", "파란색 사각형")
 
     # ✅ 사각형 객체 생성
     red_square = BattleSquare(x=100, y=200, color=(255, 0, 0), controls="auto", image_path=red_image_path)

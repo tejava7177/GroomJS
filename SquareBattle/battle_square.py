@@ -260,6 +260,9 @@ class BattleSquare:
         self.speed_x = int(self.speed_x * speed_factor) if self.speed_x != 0 else SQUARE_SPEED
         self.speed_y = int(self.speed_y * speed_factor) if self.speed_y != 0 else SQUARE_SPEED
 
+        # ✅ 이미지 크기도 사각형 크기에 맞게 줄이기
+        self.scale_image()
+
         # 가시 크기도 사각형 크기에 맞게 줄이기
         self.draw_spikes_update()
 
@@ -285,3 +288,10 @@ class BattleSquare:
         """ HP 회복 (최대 100 제한) """
         self.hp = min(100, self.hp + amount)
         print(f"{self.color} 사각형이 HP {amount} 회복! 현재 HP: {self.hp}")
+
+    def scale_image(self):
+        """ 이미지 크기를 현재 사각형 크기에 맞게 조정 """
+        if self.image:
+            img_width = int(self.width * 0.8)  # 사각형의 80% 크기로 설정
+            img_height = int(self.height * 0.8)
+            self.image = pygame.transform.scale(self.image, (img_width, img_height))
