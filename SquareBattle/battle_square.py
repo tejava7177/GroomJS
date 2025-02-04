@@ -250,21 +250,27 @@ class BattleSquare:
             return True
         return False
 
+
+    # 수정한 후
     def update_size(self):
-        """ HP가 10 감소할 때마다 크기 10% 감소, 속도 2% 증가 """
-        scale_factor = 0.9  # 크기 10% 감소
-        speed_factor = 1.05  # 속도 5% 증가
+        """ HP 변화에 따라 크기를 조절 (줄어들고, 다시 커질 수 있음) """
+        scale_factor = self.hp / INITIAL_HP  # 현재 HP 비율 계산
 
-        self.width = max(10, int(self.width * scale_factor))  # 최소 크기 10 유지
-        self.height = max(10, int(self.height * scale_factor))
-        self.speed_x = int(self.speed_x * speed_factor) if self.speed_x != 0 else SQUARE_SPEED
-        self.speed_y = int(self.speed_y * speed_factor) if self.speed_y != 0 else SQUARE_SPEED
+        # ✅ HP 비율에 따라 크기 조정 (최소 크기 10 유지)
+        self.width = max(10, int(SQUARE_SIZE * scale_factor))
+        self.height = max(10, int(SQUARE_SIZE * scale_factor))
 
-        # ✅ 이미지 크기도 사각형 크기에 맞게 줄이기
+        # ✅ 이동 속도도 HP 비율에 따라 조정 (최대 HP일 때 기본 속도로)
+        self.speed_x = max(1, int(SQUARE_SPEED * (1 + (1 - scale_factor))))  # HP 줄어들수록 속도 증가
+        self.speed_y = max(1, int(SQUARE_SPEED * (1 + (1 - scale_factor))))
+
+        # ✅ 이미지 크기 조정
         self.scale_image()
 
-        # 가시 크기도 사각형 크기에 맞게 줄이기
+        # ✅ 가시 크기도 사각형 크기에 맞게 줄이기
         self.draw_spikes_update()
+
+
 
     def draw_spikes_update(self):
         """ 가시 크기를 사각형 크기에 맞게 조정 """
@@ -285,9 +291,14 @@ class BattleSquare:
         return my_rect.colliderect(heal_rect)
 
     def heal(self, amount):
-        """ HP 회복 (최대 100 제한) """
-        self.hp = min(100, self.hp + amount)
-        print(f"{self.color} 사각형이 HP {amount} 회복! 현재 HP: {self.hp}")
+        """ HP 회복 (최대 100 제한) 및 크기 복구 """
+        previous_hp = self.hp  # ✅ 회복 전 HP 저장
+        self.hp = min(INITIAL_HP, self.hp + amount)  # ✅ HP 회복
+
+        if self.hp > previous_hp:  # ✅ HP가 증가한 경우 크기도 원래 크기로 증가
+            self.update_size()
+
+        print(f"💚 {self.color} 사각형이 HP {amount} 회복! 현재 HP: {self.hp}")
 
     def scale_image(self):
         """ 이미지 크기를 현재 사각형 크기에 맞게 조정 """
