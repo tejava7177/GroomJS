@@ -120,7 +120,7 @@ class GameRecorder:
         """ 🎥 FFmpeg를 사용하여 비디오(`gameplay.mp4`)와 오디오(`audio.wav`)를 합쳐서 `gamePlayVideo` 디렉토리에 저장 """
 
         # ✅ 저장할 디렉토리 설정
-        save_dir = "/Users/simjuheun/Desktop/개인프로젝트/MadeGame/SquareBattle/gamePlayVideo"
+        save_dir = "/Users/simjuheun/Desktop/개인프로젝트/MadeGame/SquareBattle/GamePlayRecord"
         os.makedirs(save_dir, exist_ok=True)  # ✅ 디렉토리가 없으면 자동 생성
 
         # ✅ 저장할 파일 경로
