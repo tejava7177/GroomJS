@@ -152,44 +152,6 @@ class BattleSquare:
         my_rect = pygame.Rect(self.x, self.y, self.width, self.height)
         return my_rect.colliderect(spike_rect)
 
-    # def handle_collision(self, other):
-    #     """ 상대 사각형과의 충돌 처리 """
-    #     my_rect = pygame.Rect(self.x, self.y, self.width, self.height)
-    #     other_rect = pygame.Rect(other.x, other.y, other.width, other.height)
-    #
-    #     if my_rect.colliderect(other_rect):
-    #         print(f"🔍 {self.color} 사각형 충돌 감지!")
-    #         # 가시 공격 판정
-    #         if self.has_attacking_spike(other):
-    #             other.hp -= 10
-    #             other.update_size()  # 크기 및 속도 업데이트
-    #             print(f"{self.color} 사각형이 공격! {other.color} HP: {other.hp}")
-    #
-    #             # 공격 성공 후 가시 제거
-    #             self.remove_spikes()
-    #
-    #         # ✅ 겹침 방지: 충돌 후 일정 거리 밀어내기
-    #         overlap_x = (self.width + other.width) / 40
-    #         overlap_y = (self.height + other.height) / 40
-    #
-    #         if self.x < other.x:
-    #             self.x -= overlap_x
-    #             other.x += overlap_x
-    #         else:
-    #             self.x += overlap_x
-    #             other.x -= overlap_x
-    #
-    #         if self.y < other.y:
-    #             self.y -= overlap_y
-    #             other.y += overlap_y
-    #         else:
-    #             self.y += overlap_y
-    #             other.y -= overlap_y
-    #
-    #         # 충돌하면 랜덤한 방향으로 튕기기
-    #         self.random_bounce()
-    #         other.random_bounce()
-    import math
 
     def handle_collision(self, other):
         """ 상대 사각형과의 충돌 처리 (한 번만 실행) """
