@@ -22,9 +22,13 @@ def run_game():
     pygame.mixer.music.set_volume(0.5)  # ✅ 볼륨 조절 (0.0 ~ 1.0)
     pygame.mixer.music.play(-1)  # ✅ 무한 반복 재생
 
+    # ✅ 녹화 객체 생성 및 녹화 시작
+    recorder = GameRecorder(screen)
+    recorder.start_recording()
+
     # ✅ 이미지 경로 설정 및 검증
-    red_image_path = validate_image_path("/Volumes/Extreme SSD/Youtube/ronaldo.jpg", "빨간색 사각형")
-    blue_image_path = validate_image_path("/Volumes/Extreme SSD/Youtube/messi.jpg", "파란색 사각형")
+    red_image_path = validate_image_path("/Volumes/Extreme SSD/Youtube/사각형게임/messi.jpg", "빨간색 사각형")
+    blue_image_path = validate_image_path("/Volumes/Extreme SSD/Youtube/사각형게임/ronaldo.jpg", "파란색 사각형")
 
     # ✅ 사각형 객체 생성
     red_square = BattleSquare(x=100, y=200, color=(255, 0, 0), controls="auto", image_path=red_image_path)
@@ -118,6 +122,8 @@ def run_game():
             running = False
 
         pygame.display.flip()
+        recorder.capture_frame()
         clock.tick(FPS)
 
+    recorder.stop_recording()
     pygame.quit()

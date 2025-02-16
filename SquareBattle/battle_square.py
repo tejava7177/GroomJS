@@ -50,39 +50,6 @@ class BattleSquare:
             img_height = int(self.height * 0.8)
             self.image = pygame.transform.scale(self.image, (img_width, img_height))
 
-    # def move(self):
-    #     """ 사각형 이동 처리 (벽 충돌 시 자연스러운 반사 및 떨림 방지) """
-    #     self.x += self.speed_x
-    #     self.y += self.speed_y
-    #
-    #     # ✅ 좌우 벽 충돌 처리
-    #     if self.x <= 0:  # 왼쪽 벽 충돌
-    #         self.x = 1  # 살짝 이동하여 벽에 붙지 않도록
-    #         self.speed_x *= -1  # 반사
-    #         self.speed_y += random.uniform(-0.3, 0.3)  # 무작위 요소 추가 (떨림 방지)
-    #
-    #     elif self.x + self.width >= WIDTH:  # 오른쪽 벽 충돌
-    #         self.x = WIDTH - self.width - 1  # 살짝 이동하여 벽에 붙지 않도록
-    #         self.speed_x *= -1
-    #         self.speed_y += random.uniform(-0.3, 0.3)
-    #
-    #     # ✅ 상하 벽 충돌 처리
-    #     if self.y <= 0:  # 위쪽 벽 충돌
-    #         self.y = 1  # 살짝 이동하여 벽에 붙지 않도록
-    #         self.speed_y *= -1
-    #         self.speed_x += random.uniform(-0.3, 0.3)
-    #
-    #     elif self.y + self.height >= HEIGHT:  # 아래쪽 벽 충돌
-    #         self.y = HEIGHT - self.height - 1  # 살짝 이동하여 벽에 붙지 않도록
-    #         self.speed_y *= -1
-    #         self.speed_x += random.uniform(-0.3, 0.3)
-    #
-    #     # ✅ 너무 작은 속도 방지 (벽에 붙어서 멈추는 문제 해결)
-    #     min_speed = 1.5  # 최소 속도
-    #     if abs(self.speed_x) < min_speed:
-    #         self.speed_x = min_speed * (1 if self.speed_x > 0 else -1)
-    #     if abs(self.speed_y) < min_speed:
-    #         self.speed_y = min_speed * (1 if self.speed_y > 0 else -1)
 
     def move(self):
         """ 사각형 이동 처리 (벽 충돌 시 자연스러운 반사 및 떨림 방지) """
