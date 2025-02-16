@@ -1,7 +1,8 @@
 import pygame
 import random
 import math
-from settings import WIDTH, HEIGHT, SQUARE_SIZE, SQUARE_SPEED, INITIAL_HP
+import time
+from settings import WIDTH, HEIGHT, SQUARE_SIZE, SQUARE_SPEED, INITIAL_HP, INITIAL_SLOW_DURATION, SLOW_SPEED_FACTOR
 
 class BattleSquare:
     def __init__(self, x, y, color, controls="auto" , image_path=None):
@@ -15,6 +16,7 @@ class BattleSquare:
         self.speed_y = SQUARE_SPEED * random.choice([-1, 1])
         self.spikes = {"top": False, "bottom": False, "left": False, "right": False}
         self.image = None
+        self.start_time = time.time()  # ✅ 게임 시작 시간 기록(속도 조절을 위해서)
 
         # ✅ 이미지 로드 및 크기 조절 (사각형보다 작게)
         if image_path:
@@ -48,30 +50,68 @@ class BattleSquare:
             img_height = int(self.height * 0.8)
             self.image = pygame.transform.scale(self.image, (img_width, img_height))
 
+    # def move(self):
+    #     """ 사각형 이동 처리 (벽 충돌 시 자연스러운 반사 및 떨림 방지) """
+    #     self.x += self.speed_x
+    #     self.y += self.speed_y
+    #
+    #     # ✅ 좌우 벽 충돌 처리
+    #     if self.x <= 0:  # 왼쪽 벽 충돌
+    #         self.x = 1  # 살짝 이동하여 벽에 붙지 않도록
+    #         self.speed_x *= -1  # 반사
+    #         self.speed_y += random.uniform(-0.3, 0.3)  # 무작위 요소 추가 (떨림 방지)
+    #
+    #     elif self.x + self.width >= WIDTH:  # 오른쪽 벽 충돌
+    #         self.x = WIDTH - self.width - 1  # 살짝 이동하여 벽에 붙지 않도록
+    #         self.speed_x *= -1
+    #         self.speed_y += random.uniform(-0.3, 0.3)
+    #
+    #     # ✅ 상하 벽 충돌 처리
+    #     if self.y <= 0:  # 위쪽 벽 충돌
+    #         self.y = 1  # 살짝 이동하여 벽에 붙지 않도록
+    #         self.speed_y *= -1
+    #         self.speed_x += random.uniform(-0.3, 0.3)
+    #
+    #     elif self.y + self.height >= HEIGHT:  # 아래쪽 벽 충돌
+    #         self.y = HEIGHT - self.height - 1  # 살짝 이동하여 벽에 붙지 않도록
+    #         self.speed_y *= -1
+    #         self.speed_x += random.uniform(-0.3, 0.3)
+    #
+    #     # ✅ 너무 작은 속도 방지 (벽에 붙어서 멈추는 문제 해결)
+    #     min_speed = 1.5  # 최소 속도
+    #     if abs(self.speed_x) < min_speed:
+    #         self.speed_x = min_speed * (1 if self.speed_x > 0 else -1)
+    #     if abs(self.speed_y) < min_speed:
+    #         self.speed_y = min_speed * (1 if self.speed_y > 0 else -1)
+
     def move(self):
         """ 사각형 이동 처리 (벽 충돌 시 자연스러운 반사 및 떨림 방지) """
-        self.x += self.speed_x
-        self.y += self.speed_y
+        # ✅ 게임 시작 후 3초 동안 속도 감소 적용
+        elapsed_time = time.time() - self.start_time  # 현재 시간 - 게임 시작 시간
+        speed_factor = SLOW_SPEED_FACTOR if elapsed_time < (INITIAL_SLOW_DURATION / 60) else 1  # 3초 후 정상 속도
+
+        self.x += self.speed_x * speed_factor
+        self.y += self.speed_y * speed_factor
 
         # ✅ 좌우 벽 충돌 처리
         if self.x <= 0:  # 왼쪽 벽 충돌
-            self.x = 1  # 살짝 이동하여 벽에 붙지 않도록
-            self.speed_x *= -1  # 반사
-            self.speed_y += random.uniform(-0.3, 0.3)  # 무작위 요소 추가 (떨림 방지)
+            self.x = 1
+            self.speed_x *= -1
+            self.speed_y += random.uniform(-0.3, 0.3)
 
         elif self.x + self.width >= WIDTH:  # 오른쪽 벽 충돌
-            self.x = WIDTH - self.width - 1  # 살짝 이동하여 벽에 붙지 않도록
+            self.x = WIDTH - self.width - 1
             self.speed_x *= -1
             self.speed_y += random.uniform(-0.3, 0.3)
 
         # ✅ 상하 벽 충돌 처리
         if self.y <= 0:  # 위쪽 벽 충돌
-            self.y = 1  # 살짝 이동하여 벽에 붙지 않도록
+            self.y = 1
             self.speed_y *= -1
             self.speed_x += random.uniform(-0.3, 0.3)
 
         elif self.y + self.height >= HEIGHT:  # 아래쪽 벽 충돌
-            self.y = HEIGHT - self.height - 1  # 살짝 이동하여 벽에 붙지 않도록
+            self.y = HEIGHT - self.height - 1
             self.speed_y *= -1
             self.speed_x += random.uniform(-0.3, 0.3)
 
@@ -81,7 +121,6 @@ class BattleSquare:
             self.speed_x = min_speed * (1 if self.speed_x > 0 else -1)
         if abs(self.speed_y) < min_speed:
             self.speed_y = min_speed * (1 if self.speed_y > 0 else -1)
-
     def random_bounce(self):
         """ 랜덤한 방향으로 튕기기 """
         self.speed_x = SQUARE_SPEED * random.choice([-1, 1])

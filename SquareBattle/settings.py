@@ -25,3 +25,8 @@ SQUARE_SPEED = 6  # 사각형 이동 속도
 SPIKE_ITEM_SIZE = 25  # 가시 아이템 크기
 #SPIKE_RESPAWN_TIME_RANGE = (60, 180)  # 1초 ~ 3초 (기존보다 빠르게)
 SPIKE_RESPAWN_TIME = 120  # 2초마다 가시 요소 등장
+
+
+# ✅ 게임 시작 후 3초 동안 속도 감소
+INITIAL_SLOW_DURATION = 180  # 3초 (60FPS 기준)
+SLOW_SPEED_FACTOR = 0.1  # ✅ 속도를 10%로 줄이기
