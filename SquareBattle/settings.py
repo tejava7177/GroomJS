@@ -17,7 +17,7 @@ FPS = 60
 INITIAL_SPAWN_TIME = 100  # 2~3초
 
 # 사각형 기본 설정
-INITIAL_HP = 100  # 사각형의 초기 HP (Power)
+INITIAL_HP = 70  # 사각형의 초기 HP (Power)
 SQUARE_SIZE = 120  # 사각형 기본 크기
 SQUARE_SPEED = 6  # 사각형 이동 속도
 

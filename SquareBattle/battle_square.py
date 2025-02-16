@@ -291,7 +291,7 @@ class BattleSquare:
         return my_rect.colliderect(heal_rect)
 
     def heal(self, amount):
-        """ HP 회복 (최대 100 제한) 및 크기 복구 """
+        """ HP 회복 (최대 100 제한) 및 크기 복구 -> 70으로 수정 """
         previous_hp = self.hp  # ✅ 회복 전 HP 저장
         self.hp = min(INITIAL_HP, self.hp + amount)  # ✅ HP 회복
 
